@@ -27,12 +27,15 @@ interface JsonPlaceHolderApi {
      * Get post for a user with additional parameters such as "order" and "sort"
      *  Main url looks like:
      *  -> https://jsonplaceholder.typicode.com/posts?userId=4&_sort=id&_order=desc
+     *
+     *  If sort and order parameters set to null then these parameters will be ignored
+     *  If userId set to null, then all users' content will be loaded
      */
     @GET("posts")
     fun getPostsForUserAndSort(
-        @Query("userId") userId: Int,
-        @Query("_sort") sort: String,
-        @Query("_order") order: String
+        @Query("userId") userId: Int?,
+        @Query("_sort") sort: String?,
+        @Query("_order") order: String?
     ): Call<List<Post>>
 
     /**

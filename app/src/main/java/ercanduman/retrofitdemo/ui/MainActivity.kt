@@ -88,9 +88,10 @@ class MainActivity : AppCompatActivity() {
         logd("getPosts() - called.")
 //        val postListCall = api.getPosts()
 //        val postListCall = api.getPostsForUser(4)
+//        val postListCall = api.getPostsForUserAndSort(4, "id", "desc")
 
         // call retrofit for network operation
-        val postListCall = api.getPostsForUserAndSort(4, "id", "desc")
+        val postListCall = api.getPostsForUserAndSort(null, null, null)
 
         /*
          To make call in background thread enqueue() function should be called, instead of execute().
