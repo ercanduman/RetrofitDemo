@@ -46,14 +46,14 @@ class MainActivity : AppCompatActivity() {
         activity_main_progressbar.show()
         logd("getContentFromUrl() - called.")
 
-        //getPosts()
-//        val commentListCall = api.getComments()
-        val commentListCall = api.getCommentsForPost(3)
-        getComments(commentListCall)
+        getPosts()
+//        getComments()
     }
 
-    private fun getComments(commentListCall: Call<List<Comment>>) {
+    private fun getComments() {
         logd("getComments() - called.")
+//        val commentListCall = api.getComments()
+        val commentListCall = api.getCommentsForPost(3)
         commentListCall.enqueue(object : Callback<List<Comment>> {
             override fun onFailure(call: Call<List<Comment>>, t: Throwable) {
                 t.message?.let {
@@ -85,8 +85,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getPosts() {
+        logd("getPosts() - called.")
+//        val postListCall = api.getPosts()
+//        val postListCall = api.getPostsForUser(4)
+
         // call retrofit for network operation
-        val postListCall = api.getPosts()
+        val postListCall = api.getPostsForUserAndSort(4, "id", "desc")
 
         /*
          To make call in background thread enqueue() function should be called, instead of execute().
