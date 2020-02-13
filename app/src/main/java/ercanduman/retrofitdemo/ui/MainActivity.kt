@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import ercanduman.retrofitdemo.CONTENT_BASE_URL
 import ercanduman.retrofitdemo.R
+import ercanduman.retrofitdemo.data.entities.Comment
 import ercanduman.retrofitdemo.data.entities.Post
 import ercanduman.retrofitdemo.data.network.JsonPlaceHolderApi
 import ercanduman.retrofitdemo.utils.*
@@ -20,6 +21,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
+    private lateinit var api: JsonPlaceHolderApi
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -29,6 +32,9 @@ class MainActivity : AppCompatActivity() {
             .baseUrl(CONTENT_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
+        // create api instance
+        api = retrofit.create(JsonPlaceHolderApi::class.java)
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Get content from url?", Snackbar.LENGTH_LONG)
@@ -40,9 +46,40 @@ class MainActivity : AppCompatActivity() {
         activity_main_progressbar.show()
         logd("getContentFromUrl() - called.")
 
-        // create api instance
-        val api: JsonPlaceHolderApi = retrofit.create(JsonPlaceHolderApi::class.java)
+        //getPosts()
+        getComments()
+    }
 
+    private fun getComments() {
+        val commentListCall = api.getComments()
+        commentListCall.enqueue(object : Callback<List<Comment>> {
+            override fun onFailure(call: Call<List<Comment>>, t: Throwable) {
+                t.message?.let { logd(it) }
+                printException(t as Exception)
+                activity_main_progressbar.hide()
+            }
+
+            override fun onResponse(call: Call<List<Comment>>, response: Response<List<Comment>>) {
+                if (response.isSuccessful.not()) {
+                    toast("Network call failed! Code: ${response.code()}")
+                    logd("Response from network call is no successful! Code: ${response.code()}")
+                    return
+                }
+
+                val comments = response.body()
+                if (!comments.isNullOrEmpty()) {
+                    val stringBuilder = StringBuilder()
+                    comments.forEach { comment ->
+                        stringBuilder.append(comment.toString()).append("\n").append("\n")
+                    }
+                    activity_main_content.text = stringBuilder.toString()
+                } else activity_main_content.text = getString(R.string.no_data_found)
+                activity_main_progressbar.hide()
+            }
+        })
+    }
+
+    private fun getPosts() {
         // call retrofit for network operation
         val postListCall = api.getPosts()
 
