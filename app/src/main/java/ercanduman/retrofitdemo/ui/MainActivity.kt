@@ -47,14 +47,19 @@ class MainActivity : AppCompatActivity() {
         logd("getContentFromUrl() - called.")
 
         //getPosts()
-        getComments()
+//        val commentListCall = api.getComments()
+        val commentListCall = api.getCommentsForPost(3)
+        getComments(commentListCall)
     }
 
-    private fun getComments() {
-        val commentListCall = api.getComments()
+    private fun getComments(commentListCall: Call<List<Comment>>) {
+        logd("getComments() - called.")
         commentListCall.enqueue(object : Callback<List<Comment>> {
             override fun onFailure(call: Call<List<Comment>>, t: Throwable) {
-                t.message?.let { logd(it) }
+                t.message?.let {
+                    logd(it)
+                    activity_main_content.text = it
+                }
                 printException(t as Exception)
                 activity_main_progressbar.hide()
             }
